@@ -1,0 +1,257 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Progreso de Creadores</title>
+  <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #010101;
+        color: #FFFFFF;
+        text-align: center;
+        margin: 20px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        color: #69C9D0;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    #progress-container {
+        width: 80%;
+        height: 35px;
+        background-color: #222;
+        margin: 20px auto;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0px 4px 10px rgba(238, 29, 82, 0.5);
+    }
+
+    #progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #EE1D52, #69C9D0);
+        text-align: center;
+        line-height: 35px;
+        color: #FFFFFF;
+        font-weight: bold;
+        transition: width 0.5s ease-in-out;
+    }
+
+    form {
+        margin-top: 25px;
+        background: #111;
+        padding: 20px;
+        border-radius: 15px;
+        width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0px 4px 12px rgba(105, 201, 208, 0.4);
+    }
+
+    input {
+        padding: 12px;
+        margin: 10px 5px;
+        width: 80%;
+        border: 2px solid #69C9D0;
+        border-radius: 10px;
+        background: #010101;
+        color: #FFFFFF;
+        font-size: 1rem;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus {
+        border-color: #EE1D52;
+        box-shadow: 0px 0px 8px #EE1D52;
+    }
+
+    button {
+        padding: 12px 25px;
+        margin-top: 15px;
+        background: linear-gradient(90deg, #69C9D0, #EE1D52);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 4px 12px rgba(238, 29, 82, 0.6);
+    }
+
+    #mensaje {
+        margin-top: 20px;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    #conseguido {
+        margin-top: 40px;
+        font-size: 3em;
+        font-weight: bold;
+        color: #FFD700;
+        display: none;
+        animation: aparecer 1s ease-in-out forwards;
+    }
+
+    @keyframes aparecer {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Contenedor del video */
+    #video-container {
+        margin-top: 20px;
+    }
+
+    #video-container iframe {
+        width: 80%;
+        height: 315px;
+        border: none;
+        border-radius: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Progreso hacia el bono</h1>
+
+  <form onsubmit="event.preventDefault(); actualizarProgreso();">
+    <input type="text" id="nombre" placeholder="Nombre del creador">
+    <input type="number" id="diamantes" placeholder="Diamantes ganados hoy" min="0">
+    <input type="number" id="horas" placeholder="Horas transmitidas hoy" min="0">
+    <input type="number" id="dias" placeholder="Días transmitidos" min="0">
+    <button type="submit">Actualizar</button>
+  </form>
+
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <!-- Aquí aparecerán los videos motivacionales -->
+  <div id="video-container"></div>
+
+  <div id="mensaje"></div>
+  <div id="conseguido">¡CONSEGUIDO! 🎉</div>
+
+  <!-- Script de EmailJS -->
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
+  <script>
+    const sheetID = "16UVCV7Z1X_GeGyJjVJBWuImkTjYD7KnRARirQv5RUrQ";
+    const apiKey = "AIzaSyDzXdZZ1frNRBkeCFtzJpwvBNBLhfiXAMI";
+    const sheetName = "creadores";
+
+    // Inicializar EmailJS
+    (function() {
+      emailjs.init({ publicKey: "PbCpmnd4vVfYBF8yT" });
+    })();
+
+    async function getData() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${sheetName}?key=${apiKey}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.values;
+    }
+
+    function mostrarVideo(progreso) {
+      const videos = {
+        5: "https://www.youtube.com/embed/uaudJlJuSss",
+        10: "https://www.youtube.com/embed/YXl5sZl3rJw",
+        20: "https://www.youtube.com/embed/l-gQLqv9f4o",
+        30: "https://www.youtube.com/embed/2zLkaY2E3wM",
+        40: "https://www.youtube.com/embed/d6wRkzCW5qI",
+        50: "https://www.youtube.com/embed/26U_seo0a1g",
+        60: "https://www.youtube.com/embed/V7XGwLbTRZI",
+        70: "https://www.youtube.com/embed/wnHW6o8WMas",
+        80: "https://www.youtube.com/embed/g-jwWYX7Jlo",
+        90: "https://www.youtube.com/embed/KxGRhd_iWuE",
+        100: "https://www.youtube.com/embed/X16OXFK0a8k"
+
+      };
+
+      const contenedor = document.getElementById("video-container");
+      if (videos[progreso]) {
+        contenedor.innerHTML = `<iframe src="${videos[progreso]}?autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      }
+    }
+
+    async function actualizarProgreso() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const diamantes = parseInt(document.getElementById("diamantes").value) || 0;
+      const horas = parseInt(document.getElementById("horas").value) || 0;
+      const dias = parseInt(document.getElementById("dias").value) || 0;
+
+      if (!nombre) {
+        alert("Por favor ingresa el nombre del creador.");
+        return;
+      }
+
+      const datos = await getData();
+      const rows = datos.slice(1);
+
+      let metaDiamantes = 1000;
+      let metaHoras = 50;
+      let metaDias = 20;
+
+      const creadorRow = rows.find(r => r[0] === nombre);
+      if (creadorRow) {
+        metaDiamantes = parseInt(creadorRow[1]) || metaDiamantes;
+        metaHoras = parseInt(creadorRow[2]) || metaHoras;
+        metaDias = parseInt(creadorRow[3]) || metaDias;
+      }
+
+      const progresoDiamantes = Math.min(diamantes / metaDiamantes, 1);
+      const progresoHoras = Math.min(horas / metaHoras, 1);
+      const progresoDias = Math.min(dias / metaDias, 1);
+
+      const progresoTotal = Math.floor(((progresoDiamantes + progresoHoras + progresoDias) / 3) * 100);
+
+      const barra = document.getElementById("progress-bar");
+      barra.style.width = progresoTotal + "%";
+      barra.innerText = progresoTotal + "%";
+
+      const mensaje = document.getElementById("mensaje");
+      const conseguido = document.getElementById("conseguido");
+
+      if (progresoTotal >= 100) {
+        conseguido.style.display = "block";
+        mensaje.innerText = "";
+      } else {
+        conseguido.style.display = "none";
+        if (progresoTotal < 20) mensaje.innerText = "¡Ánimo, apenas comienzas!";
+        else if (progresoTotal < 50) mensaje.innerText = "¡Vas muy bien, sigue así!";
+        else if (progresoTotal < 80) mensaje.innerText = "¡Estás a punto de lograrlo!";
+        else mensaje.innerText = "¡Muy cerca, no te rindas!";
+      }
+
+      // 👇 Mostrar video en hit exacto de progreso
+      if ([5,10,20,30,40,50,60,70,80,90,100].includes(progresoTotal)) {
+        mostrarVideo(progresoTotal);
+      }
+
+      // Enviar correo con EmailJS
+      emailjs.send("service_h3jipk6", "template_0hju0td", {
+        nombre: nombre,
+        diamantes: diamantes,
+        horas: horas,
+        dias: dias,
+        progreso: progresoTotal + "%"
+      })
+      .then(function(response) {
+        console.log("✅ Correo enviado", response.status, response.text);
+      }, function(error) {
+        console.error("❌ Error al enviar correo", error);
+      });
+    }
+  </script>
+</body>
+</html>
