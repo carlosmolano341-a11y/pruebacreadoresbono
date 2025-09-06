@@ -94,6 +94,13 @@
         font-weight: bold;
     }
 
+    #faltante {
+        margin-top: 15px;
+        font-size: 1.1em;
+        color: #69C9D0;
+        font-weight: bold;
+    }
+
     #conseguido {
         margin-top: 40px;
         font-size: 3em;
@@ -108,7 +115,6 @@
         to { opacity: 1; transform: scale(1); }
     }
 
-    /* Contenedor del video */
     #video-container {
         margin-top: 20px;
     }
@@ -136,13 +142,12 @@
     <div id="progress-bar"></div>
   </div>
 
-  <!-- Aquí aparecerán los videos motivacionales -->
   <div id="video-container"></div>
 
   <div id="mensaje"></div>
+  <div id="faltante"></div>
   <div id="conseguido">¡CONSEGUIDO! 🎉</div>
 
-  <!-- Script de EmailJS -->
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 
   <script>
@@ -150,7 +155,6 @@
     const apiKey = "AIzaSyDzXdZZ1frNRBkeCFtzJpwvBNBLhfiXAMI";
     const sheetName = "creadores";
 
-    // Inicializar EmailJS
     (function() {
       emailjs.init({ publicKey: "PbCpmnd4vVfYBF8yT" });
     })();
@@ -175,7 +179,6 @@
         80: "https://www.youtube.com/embed/g-jwWYX7Jlo",
         90: "https://www.youtube.com/embed/KxGRhd_iWuE",
         100: "https://www.youtube.com/embed/X16OXFK0a8k"
-
       };
 
       const contenedor = document.getElementById("video-container");
@@ -221,24 +224,31 @@
 
       const mensaje = document.getElementById("mensaje");
       const conseguido = document.getElementById("conseguido");
+      const faltante = document.getElementById("faltante");
 
       if (progresoTotal >= 100) {
         conseguido.style.display = "block";
         mensaje.innerText = "";
+        faltante.innerText = "";
       } else {
         conseguido.style.display = "none";
+
+        const faltanDiamantes = Math.max(metaDiamantes - diamantes, 0);
+        const faltanHoras = Math.max(metaHoras - horas, 0);
+        const faltanDias = Math.max(metaDias - dias, 0);
+
+        faltante.innerText = `Te faltan: ${faltanDiamantes} diamantes, ${faltanHoras} horas y ${faltanDias} días para llegar al 100%.`;
+
         if (progresoTotal < 20) mensaje.innerText = "¡Ánimo, apenas comienzas!";
         else if (progresoTotal < 50) mensaje.innerText = "¡Vas muy bien, sigue así!";
         else if (progresoTotal < 80) mensaje.innerText = "¡Estás a punto de lograrlo!";
         else mensaje.innerText = "¡Muy cerca, no te rindas!";
       }
 
-      // 👇 Mostrar video en hit exacto de progreso
       if ([5,10,20,30,40,50,60,70,80,90,100].includes(progresoTotal)) {
         mostrarVideo(progresoTotal);
       }
 
-      // Enviar correo con EmailJS
       emailjs.send("service_h3jipk6", "template_0hju0td", {
         nombre: nombre,
         diamantes: diamantes,
@@ -255,3 +265,4 @@
   </script>
 </body>
 </html>
+
